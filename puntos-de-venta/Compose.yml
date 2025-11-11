@@ -1,0 +1,15 @@
+version: "3"
+services:
+    redis:
+      image: redis:6.2.6-alpine
+      container_name: redis
+      ports:
+        - "6379:6379"
+      volumes:
+        - redis-data:/data
+
+    puntos_de_venta:
+      image: puntos_de_venta:latest
+      build: .
+volumes:
+    redis-data:
