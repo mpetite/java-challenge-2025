@@ -13,9 +13,9 @@
     <artifactId>puntos_de_venta</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Puntos de Venta</name>
-    <description>Ur mom da bomb</description>
+    <description>NA</description>
     <properties>
-        <java.version>25</java.version>
+        <java.version>23</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -30,6 +30,11 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
             <version>4.0.0-RC2</version>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
