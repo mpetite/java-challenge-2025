@@ -1,14 +1,15 @@
 package com.java_challenge.puntos_de_venta.model;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
 
-@Entity
-@Data
+import java.io.Serializable;
+
+
 @RedisHash("PuntosDeVenta")
-public class PuntosDeVenta {
+@Data
+public class PuntosDeVenta implements Serializable {
 
     @Id
     private Long id;
