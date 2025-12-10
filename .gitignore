@@ -25,3 +25,6 @@ replay_pid*
 
 #JetBrains
 .idea
+
+#build
+target
