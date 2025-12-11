@@ -20,8 +20,8 @@ public class PuntosDeVentaService {
     //C
 
     //R
-    public List<PuntosDeVenta> getAllPuntosDeVenta() {
-        return puntosDeVentaRepository.findAllPuntosDeVenta();
+    public Iterable<PuntosDeVenta> getAllPuntosDeVenta() {
+        return puntosDeVentaRepository.findAll();
     }
     //U
 

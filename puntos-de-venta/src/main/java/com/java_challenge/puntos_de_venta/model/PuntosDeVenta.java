@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 import java.io.Serializable;
 
 
-@RedisHash("PuntosDeVenta")
+@RedisHash("puntos-de-venta:1000")
 @Data
 public class PuntosDeVenta implements Serializable {
 

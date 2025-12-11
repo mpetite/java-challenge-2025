@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("puntosdeventa")
+@RequestMapping("/puntosdeventa")
 public class PuntosDeVentaController {
 
     private PuntosDeVentaService puntosDeVentaService;
@@ -20,8 +20,8 @@ public class PuntosDeVentaController {
     //C
 
     //R
-    @GetMapping
-    public List<PuntosDeVenta> getAllPuntosDeVenta() {
+    @GetMapping("/")
+    public Iterable<PuntosDeVenta> getAllPuntosDeVenta() {
         return puntosDeVentaService.getAllPuntosDeVenta();
     }
     //U

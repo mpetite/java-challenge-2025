@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface PuntosDeVentaRepository extends CrudRepository<PuntosDeVenta, Long> {
 
-    List<PuntosDeVenta> findAllPuntosDeVenta();
 }
