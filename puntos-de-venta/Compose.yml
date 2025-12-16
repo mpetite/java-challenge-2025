@@ -7,7 +7,7 @@ services:
         - "6379:6379"
       command: ["redis-server", "--appendonly", "yes"]
       volumes:
-        - redis:/data
+        - cache:/data
 
     redis-setup:
       image: redis:7.4-alpine
@@ -26,5 +26,4 @@ services:
         context: .
         dockerfile: ./Dockerfile
 volumes:
-  redis:
-    driver: local
+  cache:

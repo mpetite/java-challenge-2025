@@ -2,13 +2,15 @@ package com.java_challenge.puntos_de_venta.controller;
 
 import com.java_challenge.puntos_de_venta.model.PuntosDeVenta;
 import com.java_challenge.puntos_de_venta.service.PuntosDeVentaService;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/puntosdeventa")
 public class PuntosDeVentaController {
 
@@ -21,8 +23,8 @@ public class PuntosDeVentaController {
 
     //R
     @GetMapping("/")
-    public Iterable<PuntosDeVenta> getAllPuntosDeVenta() {
-        return puntosDeVentaService.getAllPuntosDeVenta();
+    public ResponseEntity<List<PuntosDeVenta>> getAllPuntosDeVenta() {
+        return Optional.of(puntosDeVentaService.getAllPuntosDeVenta()).map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
     }
     //U
 
