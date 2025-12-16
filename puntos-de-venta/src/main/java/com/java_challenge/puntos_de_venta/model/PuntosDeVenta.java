@@ -9,9 +9,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-
-//@RedisHash("puntos-de-venta:1000")
-@Entity
+//@Entity
+@RedisHash("puntos-de-venta")
 @Getter
 @Setter
 public class PuntosDeVenta implements Serializable {

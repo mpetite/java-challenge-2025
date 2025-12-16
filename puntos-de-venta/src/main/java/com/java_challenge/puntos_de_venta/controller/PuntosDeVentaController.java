@@ -26,6 +26,10 @@ public class PuntosDeVentaController {
     public ResponseEntity<List<PuntosDeVenta>> getAllPuntosDeVenta() {
         return Optional.of(puntosDeVentaService.getAllPuntosDeVenta()).map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
     }
+    @GetMapping("/2")
+    public ResponseEntity<Map<Object, Object>> getAllPuntosDeVenta2() {
+        return Optional.of(puntosDeVentaService.getAllPuntosDeVenta()).map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
+    }
     //U
 
     //D

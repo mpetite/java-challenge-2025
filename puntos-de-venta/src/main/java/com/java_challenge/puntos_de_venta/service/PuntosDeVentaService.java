@@ -10,9 +10,11 @@ import java.util.List;
 public class PuntosDeVentaService {
 
     private final PuntosDeVentaRepository puntosDeVentaRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public PuntosDeVentaService(PuntosDeVentaRepository puntosDeVentaRepository) {
+    public PuntosDeVentaService(PuntosDeVentaRepository puntosDeVentaRepository, RedisTemplate<String, Object> redisTemplate;) {
         this.puntosDeVentaRepository = puntosDeVentaRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     //C
@@ -20,6 +22,11 @@ public class PuntosDeVentaService {
     //R
     public List<PuntosDeVenta> getAllPuntosDeVenta() {
         return puntosDeVentaRepository.findAll();
+    }
+
+    public Map<Object, Object> getAllPuntosDeVenta2() {
+        return redisTemplate.opsForHash()
+            .entries("puntos-de-venta:1000");
     }
     //U
 
