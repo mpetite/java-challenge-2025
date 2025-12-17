@@ -25,6 +25,7 @@ replay_pid*
 
 #JetBrains
 .idea
+.vscode
 
 #build
 target
