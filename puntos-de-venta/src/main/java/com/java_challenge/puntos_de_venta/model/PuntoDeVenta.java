@@ -1,6 +1,4 @@
 package com.java_challenge.puntos_de_venta.model;
-import java.io.Serializable;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PuntoDeVenta implements Serializable {
+public class PuntoDeVenta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

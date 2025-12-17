@@ -32,13 +32,11 @@ public class RedisClientConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        // Key serialization
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
 
-        // Value serialization
-        template.setValueSerializer(new GenericJacksonJsonRedisSerializer(new ObjectMapper()));
-        template.setHashValueSerializer(new GenericJacksonJsonRedisSerializer(new ObjectMapper()));
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
 
         template.afterPropertiesSet();
         return template;
