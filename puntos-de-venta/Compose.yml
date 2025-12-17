@@ -19,10 +19,8 @@ services:
     puntos_de_venta:
       image: puntos_de_venta:latest
       depends_on:
-        - redis:
-          condition: service_started
-        - redis-setup:
-          condition: service_completed_successfully
+        - "redis"
+        - "redis-setup"
       ports:
         - "8081:8081"
       build:

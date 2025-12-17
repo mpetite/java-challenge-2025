@@ -1,32 +1,32 @@
 package com.java_challenge.puntos_de_venta.service;
 
-import com.java_challenge.puntos_de_venta.model.PuntosDeVenta;
-import com.java_challenge.puntos_de_venta.repositories.PuntosDeVentaRepository;
+import java.util.List;
+
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 
 @Service
 public class PuntosDeVentaService {
 
-    private final PuntosDeVentaRepository puntosDeVentaRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public PuntosDeVentaService(PuntosDeVentaRepository puntosDeVentaRepository, RedisTemplate<String, Object> redisTemplate;) {
-        this.puntosDeVentaRepository = puntosDeVentaRepository;
+    public PuntosDeVentaService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     //C
 
     //R
-    public List<PuntosDeVenta> getAllPuntosDeVenta() {
-        return puntosDeVentaRepository.findAll();
-    }
-
-    public Map<Object, Object> getAllPuntosDeVenta2() {
+    public List<PuntoDeVenta> getAllPuntosDeVenta() {
         return redisTemplate.opsForHash()
-            .entries("puntos-de-venta:1000");
+            .entries("challenge:puntos-de-venta:1")
+            .entrySet().stream()
+            .map(entry -> new PuntoDeVenta(
+                Long.valueOf(entry.getKey().toString()),
+                entry.getValue().toString()
+            )).toList();
     }
     //U
 
