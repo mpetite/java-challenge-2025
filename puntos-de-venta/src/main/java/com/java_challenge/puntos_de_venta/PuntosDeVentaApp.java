@@ -2,10 +2,13 @@ package com.java_challenge.puntos_de_venta;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 
-@SpringBootApplication
-@ComponentScan(basePackages = "com.java_challenge")
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class}, scanBasePackages = {"com.java_challenge.puntos_de_venta"})
+@EntityScan(basePackages = {"com.java_challenge.puntos_de_venta"})
+@EnableCaching
 public class PuntosDeVentaApp {
     public static void main(String[] args) {
         SpringApplication.run(PuntosDeVentaApp.class, args);
