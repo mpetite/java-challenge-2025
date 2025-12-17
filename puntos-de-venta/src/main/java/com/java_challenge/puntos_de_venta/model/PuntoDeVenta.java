@@ -1,4 +1,5 @@
 package com.java_challenge.puntos_de_venta.model;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

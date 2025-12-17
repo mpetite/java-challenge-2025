@@ -1,11 +1,10 @@
 package com.java_challenge.puntos_de_venta.service;
 
 import java.util.List;
-
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class PuntosDeVentaService {
@@ -19,6 +18,7 @@ public class PuntosDeVentaService {
     //C
 
     //R
+    @Cacheable(value = "puntosDeVentaCache")
     public List<PuntoDeVenta> getAllPuntosDeVenta() {
         return redisTemplate.opsForHash()
             .entries("challenge:puntos-de-venta:1")
