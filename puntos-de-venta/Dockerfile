@@ -1,4 +1,4 @@
-FROM maven:3.9.9-amazoncorretto-23-alpine as builder
+FROM maven:3.9.9-amazoncorretto-23-alpine AS builder
 LABEL authors="matias.e.petite"
 
 WORKDIR /challenge/puntos_de_venta

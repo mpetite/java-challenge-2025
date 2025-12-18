@@ -1,12 +1,9 @@
-package com.java_challenge.puntos_de_venta.utils.argumentproviders;
+package com.java_challenge.puntos_de_venta.utils.argumentproviders.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.http.ResponseEntity;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +11,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 
-public class GetAllPDVArgumentProviders implements ArgumentsProvider {
+public class GetAllPDVServiceArgumentProviders implements ArgumentsProvider {
 
 
     @Override
@@ -24,15 +21,14 @@ public class GetAllPDVArgumentProviders implements ArgumentsProvider {
         redisData.put("1", "CABA");
         redisData.put("2", "GBA_1");
 
-        ResponseEntity<List<PuntoDeVenta>> dataResponse = ResponseEntity.ok(
+        List<PuntoDeVenta> dataResponse =
             List.of(
                 new PuntoDeVenta(1L, "CABA"),
                 new PuntoDeVenta(2L, "GBA_1")
-            )
-        );
+            );
 
         return Stream.of(Arguments.of(redisData, dataResponse),
-                Arguments.of(new HashMap<>(), ResponseEntity.ok().body(List.of()))
+                Arguments.of(new HashMap<>(), (List.of()))
             );
     }
 }
