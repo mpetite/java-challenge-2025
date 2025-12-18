@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 
 @Service
@@ -18,6 +19,15 @@ public class PuntosDeVentaService {
     }
 
     //C
+    public ResponseDTO createPuntoDeVenta(PuntoDeVenta puntoDeVenta) {
+        try {
+            redisTemplate.opsForHash().put("challenge:puntos-de-venta:1", puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+            return new ResponseDTO(201, "Punto de Venta creado");
+        }
+        catch(Exception e) {
+            return new ResponseDTO(500, "Error creando Punto de Venta: " + e.getMessage());
+        }
+    }
 
     //R
     @Cacheable(value = "puntosDeVentaCache")

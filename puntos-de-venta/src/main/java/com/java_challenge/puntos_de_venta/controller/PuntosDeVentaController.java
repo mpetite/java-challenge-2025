@@ -1,13 +1,15 @@
 package com.java_challenge.puntos_de_venta.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 import com.java_challenge.puntos_de_venta.service.PuntosDeVentaService;
 
@@ -21,12 +23,17 @@ public class PuntosDeVentaController {
         this.puntosDeVentaService = puntosDeVentaService;
     }
     //C
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDTO> createPuntosDeVenta(@RequestBody PuntoDeVenta puntoDeVenta) {
+        
+        ResponseDTO response = puntosDeVentaService.createPuntoDeVenta(puntoDeVenta);
 
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
     //R
     @GetMapping("")
     public ResponseEntity<List<PuntoDeVenta>> getAllPuntosDeVenta() {
-        return Optional.of(puntosDeVentaService.getAllPuntosDeVenta()).map(ResponseEntity::ok)
-        .orElseGet(()->ResponseEntity.notFound().build());
+        return ResponseEntity.ok(puntosDeVentaService.getAllPuntosDeVenta());
     }
     //U
 
