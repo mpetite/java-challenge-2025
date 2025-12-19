@@ -12,13 +12,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 import com.java_challenge.puntos_de_venta.service.PuntosDeVentaService;
+import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.CreatePuntoDeVentaServiceArgumentProviders;
 import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.GetAllPDVServiceArgumentProviders;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +60,22 @@ class PuntosDeVentaServiceTests {
 
         //then
         assertEquals(expectedResponse.size(), result.size());
+        assertEquals(expectedResponse, result);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(CreatePuntoDeVentaServiceArgumentProviders.class)
+    void givenNewPuntoDeVenta_whenCreatePuntosDeVenta_thenReturnsResponseDTO(PuntoDeVenta puntoDeVenta, ResponseDTO expectedResponse) {
+
+        //given
+        if(puntoDeVenta.getId() == 0)
+            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+        
+
+        //when
+        ResponseDTO result = service.createPuntoDeVenta(puntoDeVenta);
+
+        //then
         assertEquals(expectedResponse, result);
     }
 }

@@ -24,7 +24,7 @@ public class PuntosDeVentaController {
     }
     //C
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> createPuntosDeVenta(@RequestBody PuntoDeVenta puntoDeVenta) {
+    public ResponseEntity<ResponseDTO> createPuntoDeVenta(@RequestBody PuntoDeVenta puntoDeVenta) {
         
         ResponseDTO response = puntosDeVentaService.createPuntoDeVenta(puntoDeVenta);
 

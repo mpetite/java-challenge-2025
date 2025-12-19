@@ -2,6 +2,7 @@ package com.java_challenge.puntos_de_venta.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class PuntosDeVentaService {
     }
 
     //C
+    @CacheEvict(value = "puntosDeVentaCache", allEntries = true)
     public ResponseDTO createPuntoDeVenta(PuntoDeVenta puntoDeVenta) {
         try {
             redisTemplate.opsForHash().put("challenge:puntos-de-venta:1", puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
