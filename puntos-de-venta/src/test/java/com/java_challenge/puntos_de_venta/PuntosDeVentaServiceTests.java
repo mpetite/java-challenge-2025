@@ -7,6 +7,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -17,12 +18,14 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 
 import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 import com.java_challenge.puntos_de_venta.service.PuntosDeVentaService;
 import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.CreatePuntoDeVentaServiceArgumentProviders;
 import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.GetAllPDVServiceArgumentProviders;
+import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.UpdatePuntoDeVentaServiceArgumentProviders;
 
 @ExtendWith(MockitoExtension.class)
 class PuntosDeVentaServiceTests {
@@ -77,5 +80,31 @@ class PuntosDeVentaServiceTests {
 
         //then
         assertEquals(expectedResponse, result);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(UpdatePuntoDeVentaServiceArgumentProviders.class)
+    void givenPuntoDeVentaUpdate_whenUpdatePuntosDeVenta_thenReturnsResponseDTO(PuntoDeVenta puntoDeVenta, ResponseDTO expectedResponse) {
+
+        //given
+        if(puntoDeVenta.getId() == 0)
+            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+        
+
+        //when
+        ResponseDTO result = service.updatePuntoDeVenta(puntoDeVenta);
+
+        //then
+        assertEquals(expectedResponse, result);
+    }
+
+    @Test
+    void givenId_whenDeletePuntosDeVenta_thenReturnsResponseDTO() {
+
+        //when
+        ResponseDTO result = service.deletePuntoDeVenta(1L);
+
+        //then
+        assertEquals(HttpStatus.NO_CONTENT.value(), result.getCode());
     }
 }

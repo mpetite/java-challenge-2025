@@ -15,6 +15,7 @@ public class GetAllPDVControllerArgumentProviders implements ArgumentsProvider {
 
 
     @Override
+    @Deprecated
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         
        List<PuntoDeVenta> serviceResponse = new ArrayList<>();

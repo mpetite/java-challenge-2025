@@ -15,6 +15,7 @@ public class GetAllPDVServiceArgumentProviders implements ArgumentsProvider {
 
 
     @Override
+    @Deprecated
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         
         Map<Object, Object> redisData = new HashMap<>();

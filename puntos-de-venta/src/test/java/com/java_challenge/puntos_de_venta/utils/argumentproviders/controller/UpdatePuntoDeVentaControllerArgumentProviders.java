@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 
-public class CreatePuntoDeVentaControllerArgumentProviders implements ArgumentsProvider {
+public class UpdatePuntoDeVentaControllerArgumentProviders implements ArgumentsProvider {
 
 
     @Override

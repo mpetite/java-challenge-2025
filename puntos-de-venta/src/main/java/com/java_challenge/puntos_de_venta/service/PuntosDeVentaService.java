@@ -62,12 +62,7 @@ public class PuntosDeVentaService {
     //D
     @CacheEvict(value = PUNTOS_DE_VENTA_CACHE, allEntries = true)
     public ResponseDTO deletePuntoDeVenta(Long id) {
-        try {
             redisTemplate.opsForHash().delete(PUNTOS_DE_VENTA_KEY, id.toString());
             return new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado");
-        }
-        catch(Exception e) {
-            return new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error eliminando Punto de Venta: " + e.getMessage());
-        }
     }
 }

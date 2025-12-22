@@ -4,6 +4,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -11,6 +12,7 @@ import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.java_challenge.puntos_de_venta.controller.PuntosDeVentaController;
@@ -19,6 +21,7 @@ import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
 import com.java_challenge.puntos_de_venta.service.PuntosDeVentaService;
 import com.java_challenge.puntos_de_venta.utils.argumentproviders.controller.CreatePuntoDeVentaControllerArgumentProviders;
 import com.java_challenge.puntos_de_venta.utils.argumentproviders.controller.GetAllPDVControllerArgumentProviders;
+import com.java_challenge.puntos_de_venta.utils.argumentproviders.controller.UpdatePuntoDeVentaControllerArgumentProviders;
 
 @ExtendWith(MockitoExtension.class)
 class PuntosDeVentaControllerTests {
@@ -58,5 +61,33 @@ class PuntosDeVentaControllerTests {
 
         //then
         assertEquals(expectedResponse, result);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(UpdatePuntoDeVentaControllerArgumentProviders.class)
+    void givenPuntoDeVentaUpdate_whenUpdatePuntosDeVenta_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
+
+        //given
+        PuntoDeVenta puntoDeVenta = new PuntoDeVenta(2L, "Armadillo");
+        given(service.updatePuntoDeVenta(puntoDeVenta)).willReturn(serviceResponse);
+
+        //when
+        ResponseEntity<ResponseDTO> result = controller.updatePuntoDeVenta(puntoDeVenta);
+
+        //then
+        assertEquals(expectedResponse, result);
+    }
+
+    @Test
+    void givenId_whenDeletePuntosDeVenta_thenReturnsResponseDTO() {
+
+        //given
+        given(service.deletePuntoDeVenta(1L)).willReturn(new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado"));
+
+        //when
+        ResponseEntity<ResponseDTO> result = controller.deletePuntoDeVenta(1L);
+
+        //then
+        assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado")), result);
     }
 }
