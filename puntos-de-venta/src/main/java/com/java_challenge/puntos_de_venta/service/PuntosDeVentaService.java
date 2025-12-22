@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.java_challenge.puntos_de_venta.dtos.ResponseDTO;
 import com.java_challenge.puntos_de_venta.model.PuntoDeVenta;
+import static com.java_challenge.puntos_de_venta.utils.CommonConstants.PUNTOS_DE_VENTA_CACHE;
+import static com.java_challenge.puntos_de_venta.utils.CommonConstants.PUNTOS_DE_VENTA_KEY;
 
 @Service
 public class PuntosDeVentaService {
@@ -20,31 +23,51 @@ public class PuntosDeVentaService {
     }
 
     //C
-    @CacheEvict(value = "puntosDeVentaCache", allEntries = true)
+    @CacheEvict(value = PUNTOS_DE_VENTA_CACHE, allEntries = true)
     public ResponseDTO createPuntoDeVenta(PuntoDeVenta puntoDeVenta) {
         try {
-            redisTemplate.opsForHash().put("challenge:puntos-de-venta:1", puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
-            return new ResponseDTO(201, "Punto de Venta creado");
+            redisTemplate.opsForHash().put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+            return new ResponseDTO(HttpStatus.CREATED.value(), "Punto de Venta creado");
         }
         catch(Exception e) {
-            return new ResponseDTO(500, "Error creando Punto de Venta: " + e.getMessage());
+            return new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error creando Punto de Venta: " + e.getMessage());
         }
     }
 
     //R
-    @Cacheable(value = "puntosDeVentaCache")
+    @Cacheable(value = PUNTOS_DE_VENTA_CACHE)
     public List<PuntoDeVenta> getAllPuntosDeVenta() {
 
         return redisTemplate.opsForHash()
-            .entries("challenge:puntos-de-venta:1")
+            .entries(PUNTOS_DE_VENTA_KEY)
             .entrySet().stream()
             .map(entry -> new PuntoDeVenta(
                 Long.valueOf(entry.getKey().toString()),
                 entry.getValue().toString()
             )).toList();
     }
+
     //U
-
+    @CacheEvict(value = PUNTOS_DE_VENTA_CACHE, allEntries = true)
+    public ResponseDTO updatePuntoDeVenta(PuntoDeVenta puntoDeVenta) {
+        try {
+            redisTemplate.opsForHash().put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+            return new ResponseDTO(HttpStatus.OK.value(), "Punto de Venta actualizado");
+        }
+        catch(Exception e) {
+            return new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error actualizando Punto de Venta: " + e.getMessage());
+        }
+    }
+    
     //D
-
+    @CacheEvict(value = PUNTOS_DE_VENTA_CACHE, allEntries = true)
+    public ResponseDTO deletePuntoDeVenta(Long id) {
+        try {
+            redisTemplate.opsForHash().delete(PUNTOS_DE_VENTA_KEY, id.toString());
+            return new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado");
+        }
+        catch(Exception e) {
+            return new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error eliminando Punto de Venta: " + e.getMessage());
+        }
+    }
 }
