@@ -1,0 +1,29 @@
+services:
+    redis:
+      image: redis:7.4-alpine
+      restart: always
+      ports:
+        - "6379:6379"
+      command: ["redis-server", "--appendonly", "yes"]
+      volumes:
+        - cache:/data
+
+    redis-setup:
+      image: redis:7.4-alpine
+      depends_on:
+        - redis
+      restart: no
+      entrypoint: sh -c "until redis-cli -h redis ping; do sleep 1; done; redis-cli -h redis SET app:version 1.0.0; redis-cli -h redis HSET challenge:transporte:1 1 'CABA' 2 'GBA_1' 3 'GBA_2' 4 'Santa Fe' 5 'Córdoba' 6 'Misiones' 7 'Salta' 8 'Chubut' 9 'Santa Cruz' 10 'Catamarca';"
+
+    transporte:
+      image: transporte:latest
+      depends_on:
+        - "redis"
+        - "redis-setup"
+      ports:
+        - "8081:8081"
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+volumes:
+  cache:
