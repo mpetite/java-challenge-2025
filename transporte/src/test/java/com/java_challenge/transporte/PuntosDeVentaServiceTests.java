@@ -1,4 +1,4 @@
-package com.java_challenge.puntos_de_venta;
+package com.java_challenge.transporte;
 
 
 import java.util.HashMap;
@@ -20,15 +20,15 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 
-import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.CreatePuntoDeVentaServiceArgumentProviders;
-import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.GetAllPDVServiceArgumentProviders;
-import com.java_challenge.puntos_de_venta.utils.argumentproviders.service.UpdatePuntoDeVentaServiceArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.service.CreateTransporteServiceArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.service.GetAllPDVServiceArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.service.UpdateTransporteServiceArgumentProviders;
 import com.java_challenge.transporte.dtos.ResponseDTO;
-import com.java_challenge.transporte.model.PuntoDeVenta;
-import com.java_challenge.transporte.service.PuntosDeVentaService;
+import com.java_challenge.transporte.model.Transporte;
+import com.java_challenge.transporte.service.TransporteService;
 
 @ExtendWith(MockitoExtension.class)
-class PuntosDeVentaServiceTests {
+class TransporteServiceTests {
 
     private static final String PUNTOS_DE_VENTA_KEY = "challenge:puntos-de-venta:1";
 
@@ -39,7 +39,7 @@ class PuntosDeVentaServiceTests {
     private HashOperations<String, Object, Object> hashOperations;
 
     @InjectMocks
-    private PuntosDeVentaService service;
+    private TransporteService service;
 
     private Map<Object, Object> redisData;
 
@@ -53,13 +53,13 @@ class PuntosDeVentaServiceTests {
 
     @ParameterizedTest
     @ArgumentsSource(GetAllPDVServiceArgumentProviders.class)
-    void givenExistingData_whenGetAllPuntosDeVenta_thenReturnsList(Map<Object, Object> data, List<PuntoDeVenta> expectedResponse) {
+    void givenExistingData_whenGetAllTransporte_thenReturnsList(Map<Object, Object> data, List<Transporte> expectedResponse) {
 
         //given
         when(hashOperations.entries(PUNTOS_DE_VENTA_KEY)).thenReturn(data);
 
         //when
-        List<PuntoDeVenta> result = service.getAllPuntosDeVenta();
+        List<Transporte> result = service.getAllTransporte();
 
         //then
         assertEquals(expectedResponse.size(), result.size());
@@ -67,42 +67,42 @@ class PuntosDeVentaServiceTests {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(CreatePuntoDeVentaServiceArgumentProviders.class)
-    void givenNewPuntoDeVenta_whenCreatePuntosDeVenta_thenReturnsResponseDTO(PuntoDeVenta puntoDeVenta, ResponseDTO expectedResponse) {
+    @ArgumentsSource(CreateTransporteServiceArgumentProviders.class)
+    void givenNewTransporte_whenCreateTransporte_thenReturnsResponseDTO(Transporte Transporte, ResponseDTO expectedResponse) {
 
         //given
-        if(puntoDeVenta.getId() == 0)
-            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+        if(Transporte.getId() == 0)
+            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, Transporte.getId().toString(), Transporte.getNombre());
         
 
         //when
-        ResponseDTO result = service.createPuntoDeVenta(puntoDeVenta);
+        ResponseDTO result = service.createTransporte(Transporte);
 
         //then
         assertEquals(expectedResponse, result);
     }
 
     @ParameterizedTest
-    @ArgumentsSource(UpdatePuntoDeVentaServiceArgumentProviders.class)
-    void givenPuntoDeVentaUpdate_whenUpdatePuntosDeVenta_thenReturnsResponseDTO(PuntoDeVenta puntoDeVenta, ResponseDTO expectedResponse) {
+    @ArgumentsSource(UpdateTransporteServiceArgumentProviders.class)
+    void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseDTO(Transporte Transporte, ResponseDTO expectedResponse) {
 
         //given
-        if(puntoDeVenta.getId() == 0)
-            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, puntoDeVenta.getId().toString(), puntoDeVenta.getNombre());
+        if(Transporte.getId() == 0)
+            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, Transporte.getId().toString(), Transporte.getNombre());
         
 
         //when
-        ResponseDTO result = service.updatePuntoDeVenta(puntoDeVenta);
+        ResponseDTO result = service.updateTransporte(Transporte);
 
         //then
         assertEquals(expectedResponse, result);
     }
 
     @Test
-    void givenId_whenDeletePuntosDeVenta_thenReturnsResponseDTO() {
+    void givenId_whenDeleteTransporte_thenReturnsResponseDTO() {
 
         //when
-        ResponseDTO result = service.deletePuntoDeVenta(1L);
+        ResponseDTO result = service.deleteTransporte(1L);
 
         //then
         assertEquals(HttpStatus.NO_CONTENT.value(), result.getCode());

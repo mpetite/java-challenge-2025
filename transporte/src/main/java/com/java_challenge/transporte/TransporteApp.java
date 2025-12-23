@@ -9,8 +9,8 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class}, scanBasePackages = {"com.java_challenge.transporte"})
 @EntityScan(basePackages = {"com.java_challenge.transporte"})
 @EnableCaching
-public class PuntosDeVentaApp {
+public class TransporteApp {
     public static void main(String[] args) {
-        SpringApplication.run(PuntosDeVentaApp.class, args);
+        SpringApplication.run(TransporteApp.class, args);
     }
 }

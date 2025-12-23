@@ -1,4 +1,4 @@
-package com.java_challenge.puntos_de_venta.utils.argumentproviders.controller;
+package com.java_challenge.transporte.utils.argumentproviders.controller;
 
 import java.util.stream.Stream;
 
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.java_challenge.transporte.dtos.ResponseDTO;
 
-public class CreatePuntoDeVentaControllerArgumentProviders implements ArgumentsProvider {
+public class UpdateTransporteControllerArgumentProviders implements ArgumentsProvider {
 
 
     @Override

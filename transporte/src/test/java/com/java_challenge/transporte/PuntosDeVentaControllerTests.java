@@ -15,32 +15,32 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.java_challenge.transporte.utils.argumentproviders.controller.CreatePuntoDeVentaControllerArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.controller.GetAllPDVControllerArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.controller.UpdatePuntoDeVentaControllerArgumentProviders;
-import com.java_challenge.transporte.controller.PuntosDeVentaController;
+import com.java_challenge.transporte.utils.argumentproviders.controller.CreateTransporteControllerArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.controller.GetAllCostosControllerArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.controller.UpdateTransporteControllerArgumentProviders;
+import com.java_challenge.transporte.controller.TransporteController;
 import com.java_challenge.transporte.dtos.ResponseDTO;
-import com.java_challenge.transporte.model.PuntoDeVenta;
-import com.java_challenge.transporte.service.PuntosDeVentaService;
+import com.java_challenge.transporte.model.Transporte;
+import com.java_challenge.transporte.service.TransporteService;
 
 @ExtendWith(MockitoExtension.class)
-class PuntosDeVentaControllerTests {
+class TransporteControllerTests {
 
     @InjectMocks
-    private PuntosDeVentaController controller;
+    private TransporteController controller;
 
     @Mock
-    private PuntosDeVentaService service;
+    private TransporteService service;
 
     @ParameterizedTest
-    @ArgumentsSource(GetAllPDVControllerArgumentProviders.class)
-    void givenExistingData_whenGetAllPuntosDeVenta_thenReturnsResponseEntity(List<PuntoDeVenta> serviceResponse, ResponseEntity<List<PuntoDeVenta>> expectedResponse) {
+    @ArgumentsSource(GetAllCostosControllerArgumentProviders.class)
+    void givenExistingData_whenGetAllTransporte_thenReturnsResponseEntity(List<Transporte> serviceResponse, ResponseEntity<List<Transporte>> expectedResponse) {
 
         //given
-        given(service.getAllPuntosDeVenta()).willReturn(serviceResponse);
+        given(service.getAllTransporte()).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<List<PuntoDeVenta>> result = controller.getAllPuntosDeVenta();
+        ResponseEntity<List<Transporte>> result = controller.getAllTransporte();
 
         //then
         assertTrue(result.getStatusCode().is2xxSuccessful());
@@ -49,43 +49,43 @@ class PuntosDeVentaControllerTests {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(CreatePuntoDeVentaControllerArgumentProviders.class)
-    void givenNewPuntoDeVenta_whenCreatePuntosDeVenta_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
+    @ArgumentsSource(CreateTransporteControllerArgumentProviders.class)
+    void givenNewTransporte_whenCreateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        PuntoDeVenta puntoDeVenta = new PuntoDeVenta(12L, "Armadillo");
-        given(service.createPuntoDeVenta(puntoDeVenta)).willReturn(serviceResponse);
+        Transporte Transporte = new Transporte(12L, "Armadillo");
+        given(service.createTransporte(Transporte)).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<ResponseDTO> result = controller.createPuntoDeVenta(puntoDeVenta);
+        ResponseEntity<ResponseDTO> result = controller.createTransporte(Transporte);
 
         //then
         assertEquals(expectedResponse, result);
     }
 
     @ParameterizedTest
-    @ArgumentsSource(UpdatePuntoDeVentaControllerArgumentProviders.class)
-    void givenPuntoDeVentaUpdate_whenUpdatePuntosDeVenta_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
+    @ArgumentsSource(UpdateTransporteControllerArgumentProviders.class)
+    void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        PuntoDeVenta puntoDeVenta = new PuntoDeVenta(2L, "Armadillo");
-        given(service.updatePuntoDeVenta(puntoDeVenta)).willReturn(serviceResponse);
+        Transporte Transporte = new Transporte(2L, "Armadillo");
+        given(service.updateTransporte(Transporte)).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<ResponseDTO> result = controller.updatePuntoDeVenta(puntoDeVenta);
+        ResponseEntity<ResponseDTO> result = controller.updateTransporte(Transporte);
 
         //then
         assertEquals(expectedResponse, result);
     }
 
     @Test
-    void givenId_whenDeletePuntosDeVenta_thenReturnsResponseDTO() {
+    void givenId_whenDeleteTransporte_thenReturnsResponseDTO() {
 
         //given
-        given(service.deletePuntoDeVenta(1L)).willReturn(new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado"));
+        given(service.deleteTransporte(1L)).willReturn(new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado"));
 
         //when
-        ResponseEntity<ResponseDTO> result = controller.deletePuntoDeVenta(1L);
+        ResponseEntity<ResponseDTO> result = controller.deleteTransporte(1L);
 
         //then
         assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Punto de Venta eliminado")), result);
