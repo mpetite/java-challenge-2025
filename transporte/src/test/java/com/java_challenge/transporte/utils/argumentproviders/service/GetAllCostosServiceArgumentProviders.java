@@ -1,4 +1,4 @@
-package com.java_challenge.puntos_de_venta.utils.argumentproviders.service;
+package com.java_challenge.transporte.utils.argumentproviders.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 
-import com.java_challenge.transporte.model.PuntoDeVenta;
+import com.java_challenge.transporte.model.Transporte;
 
-public class GetAllPDVServiceArgumentProviders implements ArgumentsProvider {
+public class GetAllCostosServiceArgumentProviders implements ArgumentsProvider {
 
 
     @Override
@@ -22,10 +22,10 @@ public class GetAllPDVServiceArgumentProviders implements ArgumentsProvider {
         redisData.put("1", "CABA");
         redisData.put("2", "GBA_1");
 
-        List<PuntoDeVenta> dataResponse =
+        List<Transporte> dataResponse =
             List.of(
-                new PuntoDeVenta(1L, "CABA"),
-                new PuntoDeVenta(2L, "GBA_1")
+                new Transporte(1L, 1L, 0.0),
+                new Transporte(2L, 2L, 0.0)
             );
 
         return Stream.of(Arguments.of(redisData, dataResponse),

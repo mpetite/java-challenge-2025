@@ -21,31 +21,31 @@ import com.java_challenge.transporte.service.TransporteService;
 @RequestMapping("/transporte")
 public class TransporteController {
 
-    private final TransporteService TransporteService;
+    private final TransporteService transporteService;
 
     public TransporteController(TransporteService TransporteService) {
-        this.TransporteService = TransporteService;
+        this.transporteService = TransporteService;
     }
 
     //C
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> createTransporte(@RequestBody Transporte Transporte) {
+    public ResponseEntity<ResponseDTO> createTransporte(@RequestBody Transporte transporte) {
         
-        ResponseDTO response = TransporteService.createTransporte(Transporte);
+        ResponseDTO response = transporteService.createTransporte(transporte);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
     //R
     @GetMapping("")
-    public ResponseEntity<List<Transporte>> getAllPuntosDeVenta() {
-        return ResponseEntity.ok(TransporteService.getAllPuntosDeVenta());
+    public ResponseEntity<List<Transporte>> getAllTransportes() {
+        return ResponseEntity.ok(transporteService.getAllTransportes());
     }
 
     //U
     @PutMapping("/update")
-    public ResponseEntity<ResponseDTO> updateTransporte(@RequestBody Transporte Transporte) {
+    public ResponseEntity<ResponseDTO> updateTransporte(@RequestBody int costo) {
         
-        ResponseDTO response = TransporteService.updateTransporte(Transporte);
+        ResponseDTO response = transporteService.updateTransporteCost(costo);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
@@ -53,7 +53,7 @@ public class TransporteController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseDTO> deleteTransporte(@PathVariable Long id) {
         
-        ResponseDTO response = TransporteService.deleteTransporte(id);
+        ResponseDTO response = transporteService.deleteTransporte(id);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 }

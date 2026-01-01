@@ -53,7 +53,7 @@ class TransporteControllerTests {
     void givenNewTransporte_whenCreateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        Transporte Transporte = new Transporte(12L, "Armadillo");
+        Transporte Transporte = new Transporte(12L, 1L, 9.0);
         given(service.createTransporte(Transporte)).willReturn(serviceResponse);
 
         //when
@@ -68,7 +68,7 @@ class TransporteControllerTests {
     void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        Transporte Transporte = new Transporte(2L, "Armadillo");
+        Transporte Transporte = new Transporte(2L, 5L, 2.0);
         given(service.updateTransporte(Transporte)).willReturn(serviceResponse);
 
         //when
