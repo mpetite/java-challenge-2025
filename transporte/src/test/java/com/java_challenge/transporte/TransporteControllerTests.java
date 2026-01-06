@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,13 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.java_challenge.transporte.utils.argumentproviders.controller.CreateTransporteControllerArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.controller.GetAllCostosControllerArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.controller.UpdateTransporteControllerArgumentProviders;
 import com.java_challenge.transporte.controller.TransporteController;
+import com.java_challenge.transporte.dtos.CostoDeTransporteDetailsDTO;
 import com.java_challenge.transporte.dtos.ResponseDTO;
 import com.java_challenge.transporte.model.Transporte;
 import com.java_challenge.transporte.service.TransporteService;
+import com.java_challenge.transporte.utils.argumentproviders.controller.CreateTransporteControllerArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.controller.GetAllCostosControllerArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.controller.UpdateTransporteControllerArgumentProviders;
 
 @ExtendWith(MockitoExtension.class)
 class TransporteControllerTests {
@@ -34,17 +36,17 @@ class TransporteControllerTests {
 
     @ParameterizedTest
     @ArgumentsSource(GetAllCostosControllerArgumentProviders.class)
-    void givenExistingData_whenGetAllTransporte_thenReturnsResponseEntity(List<Transporte> serviceResponse, ResponseEntity<List<Transporte>> expectedResponse) {
+    void givenExistingData_whenGetAllTransporte_thenReturnsResponseEntity(CostoDeTransporteDetailsDTO serviceResponse, ResponseEntity<List<Transporte>> expectedResponse) {
 
         //given
-        given(service.getAllTransporte()).willReturn(serviceResponse);
+        given(service.getCostoMinimoForTransporte(any(), any())).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<List<Transporte>> result = controller.getAllTransporte();
+        ResponseEntity<CostoDeTransporteDetailsDTO> result = controller.getCostoMinimoForTransporte(any());
 
         //then
         assertTrue(result.getStatusCode().is2xxSuccessful());
-        assertEquals(expectedResponse.getBody().size(), result.getBody().size());
+        assertEquals(expectedResponse.getBody(), result.getBody());
         assertEquals(expectedResponse, result);
     }
 
@@ -53,11 +55,11 @@ class TransporteControllerTests {
     void givenNewTransporte_whenCreateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        Transporte Transporte = new Transporte(12L, 1L, 9.0);
-        given(service.createTransporte(Transporte)).willReturn(serviceResponse);
+        Transporte transporte = new Transporte(12L, 1L, 9.0);
+        given(service.createTransporte(transporte)).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<ResponseDTO> result = controller.createTransporte(Transporte);
+        ResponseEntity<ResponseDTO> result = controller.createTransporte(transporte);
 
         //then
         assertEquals(expectedResponse, result);
@@ -68,11 +70,10 @@ class TransporteControllerTests {
     void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseEntity(ResponseDTO serviceResponse, ResponseEntity<ResponseDTO> expectedResponse) {
 
         //given
-        Transporte Transporte = new Transporte(2L, 5L, 2.0);
-        given(service.updateTransporte(Transporte)).willReturn(serviceResponse);
+        given(service.updateTransporteCost(2.0)).willReturn(serviceResponse);
 
         //when
-        ResponseEntity<ResponseDTO> result = controller.updateTransporte(Transporte);
+        ResponseEntity<ResponseDTO> result = controller.updateTransporteCost(2.0);
 
         //then
         assertEquals(expectedResponse, result);

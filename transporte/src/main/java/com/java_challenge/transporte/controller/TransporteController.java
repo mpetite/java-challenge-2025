@@ -1,10 +1,7 @@
 package com.java_challenge.transporte.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.java_challenge.transporte.dtos.CostoDeTransporteDetailsDTO;
+import com.java_challenge.transporte.dtos.OrigenDestinoDTO;
 import com.java_challenge.transporte.dtos.ResponseDTO;
 import com.java_challenge.transporte.model.Transporte;
 import com.java_challenge.transporte.service.TransporteService;
@@ -23,8 +22,8 @@ public class TransporteController {
 
     private final TransporteService transporteService;
 
-    public TransporteController(TransporteService TransporteService) {
-        this.transporteService = TransporteService;
+    public TransporteController(TransporteService transporteService) {
+        this.transporteService = transporteService;
     }
 
     //C
@@ -36,14 +35,14 @@ public class TransporteController {
     }
 
     //R
-    @GetMapping("")
-    public ResponseEntity<List<Transporte>> getAllTransportes() {
-        return ResponseEntity.ok(transporteService.getAllTransportes());
+    @PostMapping("")
+    public ResponseEntity<CostoDeTransporteDetailsDTO> getCostoMinimoForTransporte(@RequestBody OrigenDestinoDTO origenDestino) {
+        return ResponseEntity.ok(transporteService.getCostoMinimoForTransporte(origenDestino.getOrigenId(), origenDestino.getDestinoId()));
     }
 
     //U
     @PutMapping("/update")
-    public ResponseEntity<ResponseDTO> updateTransporte(@RequestBody int costo) {
+    public ResponseEntity<ResponseDTO> updateTransporteCost(@RequestBody double costo) {
         
         ResponseDTO response = transporteService.updateTransporteCost(costo);
         return ResponseEntity.status(response.getCode()).body(response);

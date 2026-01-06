@@ -2,7 +2,9 @@ package com.java_challenge.transporte.service;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -89,22 +91,89 @@ public class TransporteService {
                 .uri(url)
                 .retrieve()
                 .toEntity(PuntoDeVenta[].class);
-            List<PuntoDeVenta> puntosDeVenta = (resp.getBody() == null) ? Collections.emptyList() : Arrays.asList(resp.getBody());
+            List<PuntoDeVenta> puntosDeVenta = resp.getBody() == null ? Collections.emptyList() : Arrays.asList(resp.getBody());
+            PuntoDeVenta origenPunto = findPuntoFromId(puntosDeVenta, origenId);    
+            PuntoDeVenta destinoPunto = findPuntoFromId(puntosDeVenta, destinoId);
 
             if (origenId == destinoId) 
                 return mismoOrigenDestino(origenId, destinoId, puntosDeVenta);
-            
-            return getAllTransportes().stream()
-                .filter(transporte -> 
-                    transporte.getOrigen().equals(origenId) && 
-                    transporte.getDestino().equals(destinoId)
-                ).findFirst()
-                .orElse(transporte ->
-                    findMatchingWithEscalas(origenId, destinoId, transporte, puntosDeVenta)
-                ).map
 
+            List<Transporte> allTransportes = getAllTransportes();
+            Map<PuntoDeVenta, List<Transporte>> graph = getMappedGraph(origenPunto, allTransportes);
+            CostoDeTransporteDetailsDTO resultDTO = new CostoDeTransporteDetailsDTO();
+            allTransportes.stream()
+                .filter(transporte -> transporte.getOrigen().equals(origenId) && transporte.getDestino().equals(destinoId))
+                .findFirst()
+                .ifPresent(transporte -> {
+                    resultDTO.setOrigen(origenPunto.getNombre());
+                    resultDTO.setDestino(destinoPunto.getNombre());
+                    resultDTO.setEscalas(List.of());
+                    resultDTO.setCostoTotal(transporte.getCosto());
+                });
+
+                    // init adjacency list
+                    Map<Long, List<Transporte>> adjacencies = new HashMap<>();
+                    for (Transporte transporte : allTransportes) {
+                        adjacencies.computeIfAbsent(transporte.getOrigen(), v -> new java.util.ArrayList<>()).add(transporte);
+                    }
+
+                    // Dijkstra using a priority queue for efficiency
+                    Map<Long, Double> minDistanceByNode = new HashMap<>();
+                    Map<Long, Transporte> previousTransportByNode = new HashMap<>();
+                    for (PuntoDeVenta punto : puntosDeVenta) minDistanceByNode.put(punto.getId(), Double.POSITIVE_INFINITY);
+                    minDistanceByNode.put(origenId, 0.0);
+
+                    java.util.PriorityQueue<Map.Entry<Long, Double>> priorityQueue =
+                        new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(Map.Entry::getValue));
+                    priorityQueue.add(new java.util.AbstractMap.SimpleEntry<>(origenId, 0.0));
+
+                    while (!priorityQueue.isEmpty()) {
+                        Map.Entry<Long, Double> entry = priorityQueue.poll();
+                        Long currentNodeId = entry.getKey();
+                        double currentKnownDistance = entry.getValue();
+
+                        // Ignore stale queue entries
+                        if (currentKnownDistance > minDistanceByNode.getOrDefault(currentNodeId, Double.POSITIVE_INFINITY)) continue;
+                        if (currentNodeId.equals(destinoId)) break; // reached destination
+
+                        List<Transporte> outgoing = adjacencies.getOrDefault(currentNodeId, List.of());
+                        for (Transporte edge : outgoing) {
+                            Long neighborId = edge.getDestino();
+                            double candidateDistance = currentKnownDistance + edge.getCosto();
+                            if (candidateDistance < minDistanceByNode.getOrDefault(neighborId, Double.POSITIVE_INFINITY)) {
+                                minDistanceByNode.put(neighborId, candidateDistance);
+                                previousTransportByNode.put(neighborId, edge);
+                                priorityQueue.add(new java.util.AbstractMap.SimpleEntry<>(neighborId, candidateDistance));
+                            }
+                        }
+                    }
+
+                    double finalDistance = minDistanceByNode.getOrDefault(destinoId, Double.POSITIVE_INFINITY);
+                    if (Double.isInfinite(finalDistance)) {
+                        return new CostoDeTransporteDetailsDTO(
+                            origenPunto == null ? String.valueOf(origenId) : origenPunto.getNombre(),
+                            destinoPunto == null ? String.valueOf(destinoId) : destinoPunto.getNombre(),
+                            List.of(),
+                            -1.0
+                        );
+                    }
+
+                    // Reconstruct transport sequence from origin -> destination
+                    java.util.LinkedList<Transporte> transportPath = new java.util.LinkedList<>();
+                    Long cursor = destinoId;
+                    while (previousTransportByNode.containsKey(cursor)) {
+                        Transporte stepTransport = previousTransportByNode.get(cursor);
+                        transportPath.addFirst(stepTransport);
+                        cursor = stepTransport.getOrigen();
+                    }
+
+                    resultDTO.setOrigen(origenPunto == null ? String.valueOf(origenId) : origenPunto.getNombre());
+                    resultDTO.setDestino(destinoPunto == null ? String.valueOf(destinoId) : destinoPunto.getNombre());
+                    resultDTO.setEscalas(transportPath);
+                    resultDTO.setCostoTotal(finalDistance);
+            
             // TODO: implement pathfinding using puntos and transportes; returning placeholder for now
-            return new CostoDeTransporteDetailsDTO(String.valueOf(origenId), String.valueOf(destinoId), List.of(), 0.0);
+            return resultDTO;
         } catch (Exception e) {
             return new CostoDeTransporteDetailsDTO(String.valueOf(origenId), String.valueOf(destinoId), List.of(), -1.0);
         }
@@ -112,7 +181,7 @@ public class TransporteService {
 
     //U
     @CacheEvict(value = TRANSPORTE_CACHE, allEntries = true)
-    public ResponseDTO updateTransporteCost(int costo) {
+    public ResponseDTO updateTransporteCost(double costo) {
         try {
             //redisTemplate.opsForHash().put(TRANSPORTE_KEY, costo.toString(), transporte.getNombre());
             return new ResponseDTO(HttpStatus.OK.value(), TRANSPORTE_UPDATED_MESSAGE);
@@ -185,5 +254,28 @@ public class TransporteService {
             Long.valueOf(parsedTransporteValue[TRANSPORTE_ENTRY_DESTINO_INDEX]),
             Double.valueOf(parsedTransporteValue[TRANSPORTE_ENTRY_COSTO_INDEX]));
         }).toList();
+    }
+
+    private Map<PuntoDeVenta, List<Transporte>> getMappedGraph(PuntoDeVenta origenPunto, List<Transporte> transportes) {
+        Map<PuntoDeVenta, List<Transporte>> graph = new HashMap<>();
+
+        graph.put(origenPunto, transportes.stream()
+            .filter(transporte -> transporte.getOrigen().equals(origenPunto.getId()))
+                .toList());
+
+        return graph;
+    }
+
+    private List<PuntoDeVenta> findUnsettled(List<Transporte> allTransportes, List<PuntoDeVenta> puntosDeVenta, Long origenId) {
+        return allTransportes.stream()
+                        .filter(transporte -> transporte.getOrigen().equals(origenId))
+                        .map(transporte -> puntosDeVenta.stream()
+                            .filter(punto -> punto.getId().equals(transporte.getDestino())).toList()).flatMap(List::stream).toList();        
+    }
+
+    private PuntoDeVenta findPuntoFromId(List<PuntoDeVenta> puntosDeVenta, Long id) {
+        return puntosDeVenta.stream()
+            .filter(punto -> punto.getId().equals(id))
+            .findFirst().orElse(null);
     }
 }

@@ -3,7 +3,7 @@ services:
       image: redis:7.4-alpine
       restart: always
       ports:
-        - "6379:6379"
+        - "6380:6380"
       command: ["redis-server", "--appendonly", "yes"]
       volumes:
         - cache:/data
@@ -21,7 +21,7 @@ services:
         - "redis"
         - "redis-setup"
       ports:
-        - "8081:8081"
+        - "8082:8082"
       build:
         context: .
         dockerfile: ./Dockerfile

@@ -11,26 +11,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import static org.mockito.ArgumentMatchers.anyInt;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 
-import com.java_challenge.transporte.utils.argumentproviders.service.CreateTransporteServiceArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.service.GetAllPDVServiceArgumentProviders;
-import com.java_challenge.transporte.utils.argumentproviders.service.UpdateTransporteServiceArgumentProviders;
 import com.java_challenge.transporte.dtos.ResponseDTO;
 import com.java_challenge.transporte.model.Transporte;
 import com.java_challenge.transporte.service.TransporteService;
+import com.java_challenge.transporte.utils.argumentproviders.service.CreateTransporteServiceArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.service.GetAllCostosServiceArgumentProviders;
+import com.java_challenge.transporte.utils.argumentproviders.service.UpdateTransporteServiceArgumentProviders;
 
 @ExtendWith(MockitoExtension.class)
 class TransporteServiceTests {
 
-    private static final String PUNTOS_DE_VENTA_KEY = "challenge:puntos-de-venta:1";
+    private static final String PUNTOS_DE_VENTA_KEY = "challenge:transporte:1";
 
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
@@ -52,14 +52,14 @@ class TransporteServiceTests {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(GetAllPDVServiceArgumentProviders.class)
+    @ArgumentsSource(GetAllCostosServiceArgumentProviders.class)
     void givenExistingData_whenGetAllTransporte_thenReturnsList(Map<Object, Object> data, List<Transporte> expectedResponse) {
 
         //given
         when(hashOperations.entries(PUNTOS_DE_VENTA_KEY)).thenReturn(data);
 
         //when
-        List<Transporte> result = service.getAllTransporte();
+        List<Transporte> result = service.getCostosDirectosForOrigen(anyInt());
 
         //then
         assertEquals(expectedResponse.size(), result.size());
@@ -68,15 +68,13 @@ class TransporteServiceTests {
 
     @ParameterizedTest
     @ArgumentsSource(CreateTransporteServiceArgumentProviders.class)
-    void givenNewTransporte_whenCreateTransporte_thenReturnsResponseDTO(Transporte Transporte, ResponseDTO expectedResponse) {
+    void givenNewTransporte_whenCreateTransporte_thenReturnsResponseDTO(Transporte transporte, ResponseDTO expectedResponse) {
 
         //given
-        if(Transporte.getId() == 0)
-            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, Transporte.getId().toString(), Transporte.getNombre());
         
 
         //when
-        ResponseDTO result = service.createTransporte(Transporte);
+        ResponseDTO result = service.createTransporte(transporte);
 
         //then
         assertEquals(expectedResponse, result);
@@ -84,15 +82,12 @@ class TransporteServiceTests {
 
     @ParameterizedTest
     @ArgumentsSource(UpdateTransporteServiceArgumentProviders.class)
-    void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseDTO(Transporte Transporte, ResponseDTO expectedResponse) {
+    void givenTransporteUpdate_whenUpdateTransporte_thenReturnsResponseDTO(Transporte transporte, ResponseDTO expectedResponse) {
 
         //given
-        if(Transporte.getId() == 0)
-            doThrow(new RuntimeException("")).when(hashOperations).put(PUNTOS_DE_VENTA_KEY, Transporte.getId().toString(), Transporte.getNombre());
-        
 
         //when
-        ResponseDTO result = service.updateTransporte(Transporte);
+        ResponseDTO result = service.updateTransporteCost(2.0);
 
         //then
         assertEquals(expectedResponse, result);
