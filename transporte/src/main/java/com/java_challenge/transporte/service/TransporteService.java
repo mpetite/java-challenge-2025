@@ -92,8 +92,11 @@ public class TransporteService {
                 .retrieve()
                 .toEntity(PuntoDeVenta[].class);
             List<PuntoDeVenta> puntosDeVenta = resp.getBody() == null ? Collections.emptyList() : Arrays.asList(resp.getBody());
-            PuntoDeVenta origenPunto = findPuntoFromId(puntosDeVenta, origenId);    
+            System.out.println("Fetched puntos de venta: " + puntosDeVenta);
+            PuntoDeVenta origenPunto = findPuntoFromId(puntosDeVenta, origenId);
+            System.out.println("Origen puntos de venta: " + origenPunto);   
             PuntoDeVenta destinoPunto = findPuntoFromId(puntosDeVenta, destinoId);
+            System.out.println("Destino puntos de venta: " + destinoPunto);
 
             if (origenId == destinoId) 
                 return mismoOrigenDestino(origenId, destinoId, puntosDeVenta);
@@ -110,45 +113,63 @@ public class TransporteService {
                     resultDTO.setEscalas(List.of());
                     resultDTO.setCostoTotal(transporte.getCosto());
                 });
-
+                    //SETUP (esta ok)
                     // init adjacency list
-                    Map<Long, List<Transporte>> adjacencies = new HashMap<>();
+                    System.out.println("EMPIEZA SETUP");
+                    Map<Long, List<Transporte>> allAdjacencies = new HashMap<>();
                     for (Transporte transporte : allTransportes) {
-                        adjacencies.computeIfAbsent(transporte.getOrigen(), v -> new java.util.ArrayList<>()).add(transporte);
+                        allAdjacencies.computeIfAbsent(transporte.getOrigen(), v -> new java.util.ArrayList<>()).add(transporte); //me parece que aca hay que corregir filtrando por los transportes que tengan el key como origen
                     }
+                    System.out.println("Adjacencies: " + allAdjacencies);
 
                     // Dijkstra using a priority queue for efficiency
-                    Map<Long, Double> minDistanceByNode = new HashMap<>();
+                    Map<Long, Double> minCostByNode = new HashMap<>();
                     Map<Long, Transporte> previousTransportByNode = new HashMap<>();
-                    for (PuntoDeVenta punto : puntosDeVenta) minDistanceByNode.put(punto.getId(), Double.POSITIVE_INFINITY);
-                    minDistanceByNode.put(origenId, 0.0);
+                    //inicializas el graph con todos los puntos con costo infinito
+                    for (PuntoDeVenta punto : puntosDeVenta) 
+                        minCostByNode.put(punto.getId(), Double.POSITIVE_INFINITY);
+                    //seteas el origen con costo 0
+                    minCostByNode.put(origenId, 0.0);
+                    System.out.println("Min distances initialized: " + minCostByNode);
 
+                    //inicializas una PQ con comparador de double
                     java.util.PriorityQueue<Map.Entry<Long, Double>> priorityQueue =
                         new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(Map.Entry::getValue));
+                    //le agregas el origen con costo 0
                     priorityQueue.add(new java.util.AbstractMap.SimpleEntry<>(origenId, 0.0));
+                    System.out.println("Priority queue initialized: " + priorityQueue);
 
+                    System.out.println("EMPIEZA EL PROCESO");
+                    // PROCESO
                     while (!priorityQueue.isEmpty()) {
-                        Map.Entry<Long, Double> entry = priorityQueue.poll();
+                        Map.Entry<Long, Double> entry = priorityQueue.poll(); //es un especie de pop
+                        System.out.println("Entry polleada: " + entry);
+                        System.out.println("PQ dsps de poll: " + priorityQueue);
                         Long currentNodeId = entry.getKey();
-                        double currentKnownDistance = entry.getValue();
+                        double currentKnownCost = entry.getValue(); // 0.0 para el primer uso
 
-                        // Ignore stale queue entries
-                        if (currentKnownDistance > minDistanceByNode.getOrDefault(currentNodeId, Double.POSITIVE_INFINITY)) continue;
-                        if (currentNodeId.equals(destinoId)) break; // reached destination
+                        // Ignore stale queue entries ???
+                        if (currentKnownCost > minCostByNode.getOrDefault(currentNodeId, Double.POSITIVE_INFINITY)) continue;
+                        //if (currentNodeId.equals(destinoId)) break; // esto esta mal
 
-                        List<Transporte> outgoing = adjacencies.getOrDefault(currentNodeId, List.of());
-                        for (Transporte edge : outgoing) {
+                        //buscas los adjacentes del current node
+                        List<Transporte> currNodeAdjacencies = allAdjacencies.getOrDefault(currentNodeId, List.of());
+                        //para cada uno
+                        for (Transporte edge : currNodeAdjacencies) {
+                            //guarda el id del adjaciente
                             Long neighborId = edge.getDestino();
-                            double candidateDistance = currentKnownDistance + edge.getCosto();
-                            if (candidateDistance < minDistanceByNode.getOrDefault(neighborId, Double.POSITIVE_INFINITY)) {
-                                minDistanceByNode.put(neighborId, candidateDistance);
+                            //calcula el costo total desde el origen hacia el punto adjacente
+                            double candidateCost = currentKnownCost + edge.getCosto();
+                            //si el costo total desde el origen hacia el punto adjacente es menor al costo minimo registrado hasta entonces para ese destino
+                            if (candidateCost < minCostByNode.getOrDefault(neighborId, Double.POSITIVE_INFINITY)) {
+                                minCostByNode.put(neighborId, candidateCost);
                                 previousTransportByNode.put(neighborId, edge);
-                                priorityQueue.add(new java.util.AbstractMap.SimpleEntry<>(neighborId, candidateDistance));
+                                priorityQueue.add(new java.util.AbstractMap.SimpleEntry<>(neighborId, candidateCost));
                             }
                         }
                     }
 
-                    double finalDistance = minDistanceByNode.getOrDefault(destinoId, Double.POSITIVE_INFINITY);
+                    double finalDistance = minCostByNode.getOrDefault(destinoId, Double.POSITIVE_INFINITY);
                     if (Double.isInfinite(finalDistance)) {
                         return new CostoDeTransporteDetailsDTO(
                             origenPunto == null ? String.valueOf(origenId) : origenPunto.getNombre(),
@@ -175,7 +196,7 @@ public class TransporteService {
             // TODO: implement pathfinding using puntos and transportes; returning placeholder for now
             return resultDTO;
         } catch (Exception e) {
-            return new CostoDeTransporteDetailsDTO(String.valueOf(origenId), String.valueOf(destinoId), List.of(), -1.0);
+            throw new RuntimeException("Error fetching puntos de venta: " + e.getMessage());
         }
     }
 

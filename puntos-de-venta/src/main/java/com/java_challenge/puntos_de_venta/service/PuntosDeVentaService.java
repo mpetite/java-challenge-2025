@@ -41,17 +41,13 @@ public class PuntosDeVentaService {
     @Cacheable(value = PUNTOS_DE_VENTA_CACHE)
     public List<PuntoDeVenta> getAllPuntosDeVenta() {
 
-        List<PuntoDeVenta> puntosDeVenta = redisTemplate.opsForHash()
+        return redisTemplate.opsForHash()
             .entries(PUNTOS_DE_VENTA_KEY)
             .entrySet().stream()
             .map(entry -> new PuntoDeVenta(
                 Long.valueOf(entry.getKey().toString()),
                 entry.getValue().toString()
             )).toList();
-        rabbitTemplate.receive("challengeExchange");
-        if (rabbitTemplate.receive("challengeExchange").getBody().equals(this))
-        rabbitTemplate.convertAndSend("challengeExchange",null , puntosDeVenta);
-        return puntosDeVenta;
     }
 
     //U
