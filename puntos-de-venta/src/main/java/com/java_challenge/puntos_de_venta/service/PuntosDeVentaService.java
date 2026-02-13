@@ -2,7 +2,6 @@ package com.java_challenge.puntos_de_venta.service;
 
 import java.util.List;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,11 +17,9 @@ import static com.java_challenge.puntos_de_venta.utils.CommonConstants.PUNTOS_DE
 public class PuntosDeVentaService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RabbitTemplate rabbitTemplate;
 
-    public PuntosDeVentaService(RedisTemplate<String, Object> redisTemplate, RabbitTemplate rabbitTemplate) {
+    public PuntosDeVentaService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.rabbitTemplate = rabbitTemplate;
     }
 
     //C

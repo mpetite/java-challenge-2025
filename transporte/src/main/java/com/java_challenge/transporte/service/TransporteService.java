@@ -85,7 +85,7 @@ public class TransporteService {
     public CostoDeTransporteDetailsDTO getCostoMinimoForTransporte(Long origenId, Long destinoId) {
         
         try {
-            String url = "http://localhost:8081/puntosdeventa";
+            String url = "http://puntos_de_venta:8081/puntosdeventa";
             ResponseEntity<PuntoDeVenta[]> resp = restClient
                 .get()
                 .uri(url)
